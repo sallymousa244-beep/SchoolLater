@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقارير التأخير</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f5fb;
+            color: #333;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4f46a5;
+            margin-top: 0;
+        }
+
+        h2 { color: #4f46a5; }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat {
+            background: #f5f5ff;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .table-container { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        tbody tr:hover { background: #f8f8ff; }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #667eea;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover { background: #555fd1; }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .no-report {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+        }
+
+        .site-footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #000;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .filters, .stats, .buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                width: 94%;
+                margin: 15px auto;
+            }
+
+            .card { padding: 18px; }
+        }
+
+        @media print {
+            body { background: white; }
+
+            .filters, .buttons, .site-footer {
+                display: none !important;
+            }
+
+            .card { box-shadow: none; }
+
+            h1 { color: black; }
+
+            th {
+                background: #ddd !important;
+                color: black !important;
+            }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="card">
+        <h1>📊 تقارير التأخير</h1>
+
+        <div class="filters">
+            <div>
+                <label for="reportMonth">📅 الشهر</label>
+                <select id="reportMonth">
+                    <option value="">كل الأشهر</option>
+                    <option value="1">كانون الثاني</option>
+                    <option value="2">شباط</option>
+                    <option value="3">آذار</option>
+                    <option value="4">نيسان</option>
+                    <option value="5">أيار</option>
+                    <option value="6">حزيران</option>
+                    <option value="7">تموز</option>
+                    <option value="8">آب</option>
+                    <option value="9">أيلول</option>
+                    <option value="10">تشرين الأول</option>
+                    <option value="11">تشرين الثاني</option>
+                    <option value="12">كانون الأول</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="reportDate">📆 تاريخ محدد</label>
+                <input type="date" id="reportDate">
+            </div>
+
+            <div>
+                <label for="reportClass">🏫 الصف</label>
+                <select id="reportClass">
+                    <option value="">كل الصفوف</option>
+                    <option>سابع أ</option>
+                    <option>سابع ب</option>
+                    <option>سابع ج</option>
+                    <option>ثامن أ</option>
+                    <option>ثامن ب</option>
+                    <option>ثامن ج</option>
+                    <option>تاسع أ</option>
+                    <option>تاسع ب</option>
+                    <option>تاسع ج</option>
+                    <option>عاشر أ</option>
+                    <option>عاشر ب</option>
+                    <option>أول ثانوي أ</option>
+                    <option>أول ثانوي ب</option>
+                    <option>توجيهي صحي</option>
+                    <option>توجيهي هندسي</option>
+                    <option>توجيهي لغات</option>
+                    <option>توجيهي أعمال</option>
+                    <option>عاشر IT</option>
+                    <option>أول ثانوي IT</option>
+                    <option>توجيهي IT</option>
+                    <option>عاشر أعمال</option>
+                    <option>أول ثانوي أعمال</option>
+                    <option>توجيهي BTEC أعمال</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number" id="totalLate">0</div>
+            <div>إجمالي التأخيرات</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number" id="totalStudents">0</div>
+            <div>عدد الطالبات المتأخرات</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number" id="topClass">-</div>
+            <div>أكثر صف فيه تأخير</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📋 تفاصيل التقرير</h2>
+
+        <p id="loadStatus" class="no-report" aria-live="polite">
+            جارٍ تحميل السجلات من قاعدة البيانات...
+        </p>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم الطالبة</th>
+                        <th>الصف</th>
+                        <th>التاريخ</th>
+                        <th>الوقت</th>
+                        <th>السبب</th>
+                        <th>المعلمة</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTable"></tbody>
+            </table>
+        </div>
+
+        <p id="noReport" class="no-report" hidden>
+            لا توجد بيانات حسب الفلاتر المختارة.
+        </p>
+
+        <div class="buttons">
+            <button id="printButton" type="button">🖨️ طباعة التقرير</button>
+            <button id="excelButton" type="button">📥 تنزيل Excel</button>
+            <button id="homeButton" type="button">← الرجوع للصفحة الرئيسية</button>
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer">
+    © جميع الحقوق محفوظة<br>
+    تصميم وتطوير سالي موسى العمرات
+</footer>
+
+<script type="module">
+    import { db, auth } from "./firebase.js";
+
+    import {
+        collection,
+        getDocs
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    import {
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+    let records = [];
+    let loadStarted = false;
+
+    const monthInput = document.getElementById("reportMonth");
+    const dateInput = document.getElementById("reportDate");
+    const classSelect = document.getElementById("reportClass");
+    const table = document.getElementById("reportTable");
+    const noReport = document.getElementById("noReport");
+    const loadStatus = document.getElementById("loadStatus");
+
+    // تحويل الأرقام العربية إلى أرقام إنجليزية
+    function normalizeDigits(value) {
+        return String(value ?? "")
+            .replace(/[٠-٩]/g, digit =>
+                "٠١٢٣٤٥٦٧٨٩".indexOf(digit)
+            )
+            .replace(/[۰-۹]/g, digit =>
+                "۰۱۲۳۴۵۶۷۸۹".indexOf(digit)
+            );
+    }
+
+    // استخراج تاريخ السجل بصيغة السنة-الشهر-اليوم
+    function getRecordDate(record) {
+        let value = record.date;
+
+        // دعم حقول التاريخ التي تكون من نوع Timestamp
+        if (value && typeof value.toDate === "function") {
+            value = value.toDate();
+        }
+
+        if (value instanceof Date && !isNaN(value.getTime())) {
+            return {
+                year: value.getFullYear(),
+                month: value.getMonth() + 1,
+                day: value.getDate()
+            };
+        }
+
+        if (typeof value === "string") {
+            value = normalizeDigits(value).trim();
+
+            // صيغة 2026-10-11 أو 2026-10-11T...
+            const iso = value.match(
+                /^(\d{4})-(\d{1,2})-(\d{1,2})/
+            );
+
+            if (iso) {
+                return {
+                    year: Number(iso[1]),
+                    month: Number(iso[2]),
+                    day: Number(iso[3])
+                };
+            }
+
+            // إزالة علامات الاتجاه التي قد ترافق التاريخ العربي
+            value = value.replace(/[\u200e\u200f\u202a-\u202e]/g, "");
+
+            // دعم 11/10/2026 أو ١١‏/١٠‏/٢٠٢٦
+            const parts = value.match(
+                /^(\d{1,2})\s*[\/.-]\s*(\d{1,2})\s*[\/.-]\s*(\d{4})$/
+            );
+
+            if (parts) {
+                return {
+                    day: Number(parts[1]),
+                    month: Number(parts[2]),
+                    year: Number(parts[3])
+                };
+            }
+        }
+
+        // استخدام createdAt كخيار احتياطي إذا تعذر قراءة date
+        const createdAt = record.createdAt;
+
+        if (createdAt && typeof createdAt.toDate === "function") {
+            const d = createdAt.toDate();
+            return {
+                year: d.getFullYear(),
+                month: d.getMonth() + 1,
+                day: d.getDate()
+            };
+        }
+
+        if (createdAt instanceof Date && !isNaN(createdAt.getTime())) {
+            return {
+                year: createdAt.getFullYear(),
+                month: createdAt.getMonth() + 1,
+                day: createdAt.getDate()
+            };
+        }
+
+        return null;
+    }
+
+    function formatDate(record) {
+        if (record.date) {
+            if (typeof record.date === "string") {
+                return record.date;
+            }
+
+            if (typeof record.date.toDate === "function") {
+                return record.date.toDate().toLocaleDateString("ar-JO");
+            }
+        }
+
+        const d = getRecordDate(record);
+
+        if (!d) return "-";
+
+        return `${String(d.day).padStart(2, "0")}/${String(d.month).padStart(2, "0")}/${d.year}`;
+    }
+
+    function getFilteredRecords() {
+        return records.filter(record => {
+            const recordDate = getRecordDate(record);
+
+            if (monthInput.value) {
+                if (!recordDate ||
+                    recordDate.month !== Number(monthInput.value)) {
+                    return false;
+                }
+            }
+
+            if (dateInput.value) {
+                if (!recordDate) return false;
+
+                const [year, month, day] = dateInput.value
+                    .split("-")
+                    .map(Number);
+
+                if (
+                    recordDate.year !== year ||
+                    recordDate.month !== month ||
+                    recordDate.day !== day
+                ) {
+                    return false;
+                }
+            }
+
+            if (
+                classSelect.value &&
+                String(record.className ?? "").trim() !== classSelect.value
+            ) {
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    function addCell(row, value) {
+        const cell = document.createElement("td");
+        cell.textContent = value == null || value === "" ? "-" : String(value);
+        row.appendChild(cell);
+    }
+
+    function updateReport() {
+        const filtered = getFilteredRecords();
+
+        document.getElementById("totalLate").textContent = filtered.length;
+
+        const uniqueStudents = new Set(
+            filtered
+                .map(record => String(record.studentName ?? "").trim())
+                .filter(Boolean)
+        );
+
+        document.getElementById("totalStudents").textContent =
+            uniqueStudents.size;
+
+        const classCounts = {};
+
+        filtered.forEach(record => {
+            const name = String(record.className ?? "").trim() || "غير محدد";
+            classCounts[name] = (classCounts[name] || 0) + 1;
+        });
+
+        let highestClass = "-";
+        let highestCount = 0;
+
+        Object.entries(classCounts).forEach(([name, count]) => {
+            if (count > highestCount) {
+                highestCount = count;
+                highestClass = name;
+            }
+        });
+
+        document.getElementById("topClass").textContent = highestClass;
+
+        table.replaceChildren();
+
+        filtered.forEach((record, index) => {
+            const row = document.createElement("tr");
+
+            addCell(row, index + 1);
+            addCell(row, record.studentName);
+            addCell(row, record.className);
+            addCell(row, formatDate(record));
+            addCell(row, record.time);
+            addCell(row, record.reason);
+            addCell(row, record.teacher);
+
+            table.appendChild(row);
+        });
+
+        noReport.hidden = filtered.length !== 0;
+    }
+
+    async function loadRecords() {
+        loadStatus.hidden = false;
+        loadStatus.textContent = "جارٍ تحميل السجلات من Firebase...";
+
+        try {
+            const snapshot = await getDocs(collection(db, "lateRecords"));
+
+            records = snapshot.docs.map(documentSnapshot => ({
+                id: documentSnapshot.id,
+                ...documentSnapshot.data()
+            }));
+
+            loadStatus.hidden = true;
+            updateReport();
+
+            if (records.length === 0) {
+                loadStatus.hidden = false;
+                loadStatus.textContent =
+                    "تم الاتصال بقاعدة البيانات، لكن مجموعة lateRecords لا تحتوي على سجلات.";
+            }
+        } catch (error) {
+            console.error("Firebase reports error:", error);
+
+            loadStatus.hidden = false;
+
+            if (error.code === "permission-denied") {
+                loadStatus.textContent =
+                    "ليس لديك صلاحية لقراءة سجلات التأخير. تحققي من تسجيل الدخول وقواعد Firestore.";
+            } else {
+                loadStatus.textContent =
+                    "تعذر تحميل السجلات. تحققي من الاتصال بالإنترنت وإعدادات Firebase.";
+            }
+
+            table.replaceChildren();
+            noReport.hidden = true;
+        }
+    }
+
+    monthInput.addEventListener("change", updateReport);
+    dateInput.addEventListener("change", updateReport);
+    classSelect.addEventListener("change", updateReport);
+
+    document.getElementById("printButton").addEventListener("click", () => {
+        window.print();
+    });
+
+    document.getElementById("homeButton").addEventListener("click", () => {
+        window.location.href = "dashboard.html";
+    });
+
+    document.getElementById("excelButton").addEventListener("click", () => {
+        const filtered = getFilteredRecords();
+
+        if (filtered.length === 0) {
+            alert("لا توجد بيانات حسب الفلاتر المختارة.");
+            return;
+        }
+
+        if (typeof XLSX === "undefined") {
+            alert("تعذر تحميل مكتبة Excel. تحققي من الاتصال بالإنترنت.");
+            return;
+        }
+
+        const excelData = filtered.map((record, index) => ({
+            "الرقم": index + 1,
+            "اسم الطالبة": record.studentName || "",
+            "الصف": record.className || "",
+            "التاريخ": formatDate(record),
+            "الوقت": record.time || "",
+            "سبب التأخير": record.reason || "",
+            "المعلمة": record.teacher || ""
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "تقرير التأخير"
+        );
+
+        XLSX.writeFile(workbook, "تقرير_تأخير_الطالبات.xlsx");
+    });
+
+    // انتظار استعادة حالة تسجيل الدخول قبل قراءة البيانات
+    onAuthStateChanged(auth, () => {
+        if (!loadStarted) {
+            loadStarted = true;
+            loadRecords();
+        }
+    });
+</script>
+</body>
+</html>
