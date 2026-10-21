@@ -676,6 +676,7 @@ endDateInput.addEventListener("change", updateReport);
 classSelect.addEventListener("change", updateReport);
 
     
+
 document.getElementById("printButton").addEventListener("click", () => {
     document.getElementById("printStartDate").textContent =
         startDateInput.value || "من بداية السجلات";
@@ -688,6 +689,8 @@ document.getElementById("printButton").addEventListener("click", () => {
 
     window.print();
 });
+
+
 
     document.getElementById("homeButton").addEventListener("click", () => {
         window.location.href = "dashboard.html";
