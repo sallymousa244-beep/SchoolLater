@@ -198,10 +198,17 @@
                 </select>
             </div>
 
-            <div>
-                <label for="reportDate">📆 تاريخ محدد</label>
-                <input type="date" id="reportDate">
-            </div>
+            
+<div>
+    <label for="startDate">📅 من تاريخ</label>
+    <input type="date" id="startDate">
+</div>
+
+<div>
+    <label for="endDate">📅 إلى تاريخ</label>
+    <input type="date" id="endDate">
+</div>
+
 
             <div>
                 <label for="reportClass">🏫 الصف</label>
@@ -309,7 +316,8 @@
     let loadStarted = false;
 
     const monthInput = document.getElementById("reportMonth");
-    const dateInput = document.getElementById("reportDate");
+    const startDateInput = document.getElementById("startDate");
+const endDateInput = document.getElementById("endDate");
     const classSelect = document.getElementById("reportClass");
     const table = document.getElementById("reportTable");
     const noReport = document.getElementById("noReport");
@@ -417,43 +425,73 @@
         return `${String(d.day).padStart(2, "0")}/${String(d.month).padStart(2, "0")}/${d.year}`;
     }
 
-    function getFilteredRecords() {
-        return records.filter(record => {
-            const recordDate = getRecordDate(record);
+    
+function getFilteredRecords() {
+    return records.filter(record => {
+        const recordDate = getRecordDate(record);
 
-            if (monthInput.value) {
-                if (!recordDate ||
-                    recordDate.month !== Number(monthInput.value)) {
-                    return false;
-                }
-            }
-
-            if (dateInput.value) {
-                if (!recordDate) return false;
-
-                const [year, month, day] = dateInput.value
-                    .split("-")
-                    .map(Number);
-
-                if (
-                    recordDate.year !== year ||
-                    recordDate.month !== month ||
-                    recordDate.day !== day
-                ) {
-                    return false;
-                }
-            }
-
+        // فلترة حسب الشهر
+        if (monthInput.value) {
             if (
-                classSelect.value &&
-                String(record.className ?? "").trim() !== classSelect.value
+                !recordDate ||
+                recordDate.month !== Number(monthInput.value)
             ) {
                 return false;
             }
+        }
 
-            return true;
-        });
-    }
+        // فلترة من تاريخ
+        if (startDateInput.value) {
+            if (!recordDate) return false;
+
+            const [year, month, day] =
+                startDateInput.value.split("-").map(Number);
+
+            const recordTime = new Date(
+                recordDate.year,
+                recordDate.month - 1,
+                recordDate.day
+            ).getTime();
+
+            const startTime = new Date(
+                year, month - 1, day
+            ).getTime();
+
+            if (recordTime < startTime) return false;
+        }
+
+        // فلترة إلى تاريخ
+        if (endDateInput.value) {
+            if (!recordDate) return false;
+
+            const [year, month, day] =
+                endDateInput.value.split("-").map(Number);
+
+            const recordTime = new Date(
+                recordDate.year,
+                recordDate.month - 1,
+                recordDate.day
+            ).getTime();
+
+            const endTime = new Date(
+                year, month - 1, day
+            ).getTime();
+
+            if (recordTime > endTime) return false;
+        }
+
+        // فلترة حسب الصف
+        if (
+            classSelect.value &&
+            String(record.className ?? "").trim() !==
+                classSelect.value
+        ) {
+            return false;
+        }
+
+        return true;
+    });
+}
 
     function addCell(row, value) {
         const cell = document.createElement("td");
@@ -552,8 +590,9 @@
     }
 
     monthInput.addEventListener("change", updateReport);
-    dateInput.addEventListener("change", updateReport);
-    classSelect.addEventListener("change", updateReport);
+startDateInput.addEventListener("change", updateReport);
+endDateInput.addEventListener("change", updateReport);
+classSelect.addEventListener("change", updateReport);
 
     document.getElementById("printButton").addEventListener("click", () => {
         window.print();
