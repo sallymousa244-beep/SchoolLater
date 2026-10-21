@@ -167,6 +167,54 @@
                 color: black !important;
             }
         }
+        
+.print-header {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 15mm;
+    }
+
+    .print-header {
+        display: block !important;
+        text-align: center;
+        color: #000;
+        margin-bottom: 25px;
+        line-height: 1.8;
+        font-size: 14px;
+    }
+
+    .print-header .header-ministry {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    .print-header h2 {
+        color: #000 !important;
+        margin: 12px 0;
+        font-size: 20px;
+    }
+
+    .print-header hr {
+        border: 0;
+        border-top: 1px solid #000;
+        margin: 10px 0;
+    }
+
+    .print-period {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .print-date {
+        font-size: 12px;
+        margin-top: 5px;
+    }
+}
+
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -174,6 +222,30 @@
 
 <body>
 <div class="container">
+    
+    <div class="print-header">
+        <div class="header-ministry">المملكة الأردنية الهاشمية</div>
+        <div>وزارة التربية والتعليم</div>
+        <div>مدرسة كفرسوم الثانوية الشاملة للبنات</div>
+
+        <hr>
+
+        <h2>تقرير التأخير الصباحي للطالبات</h2>
+
+        <div class="print-period">
+            الفترة من:
+            <span id="printStartDate">غير محدد</span>
+            &nbsp;&nbsp;
+            إلى:
+            <span id="printEndDate">غير محدد</span>
+        </div>
+
+        <div class="print-date">
+            تاريخ الطباعة:
+            <span id="printToday"></span>
+        </div>
+    </div>
+
 
     <div class="card">
         <h1>📊 تقارير التأخير</h1>
@@ -603,9 +675,19 @@ startDateInput.addEventListener("change", updateReport);
 endDateInput.addEventListener("change", updateReport);
 classSelect.addEventListener("change", updateReport);
 
-    document.getElementById("printButton").addEventListener("click", () => {
-        window.print();
-    });
+    
+document.getElementById("printButton").addEventListener("click", () => {
+    document.getElementById("printStartDate").textContent =
+        startDateInput.value || "من بداية السجلات";
+
+    document.getElementById("printEndDate").textContent =
+        endDateInput.value || "حتى آخر السجلات";
+
+    document.getElementById("printToday").textContent =
+        new Date().toLocaleDateString("ar-JO");
+
+    window.print();
+});
 
     document.getElementById("homeButton").addEventListener("click", () => {
         window.location.href = "dashboard.html";
