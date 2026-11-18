@@ -23,11 +23,21 @@
 
         <form id="loginForm">
 
-            <label for="username">اسم المستخدم</label>
-            <input 
-                type="text" 
-                id="username" 
-                placeholder="أدخل اسم المستخدم"
+            <label for="teacherName">اسم المعلمة</label>
+            <input
+                type="text"
+                id="teacherName"
+                placeholder="أدخلي اسمك"
+                autocomplete="name"
+                required
+            >
+
+            <label for="username">البريد الإلكتروني</label>
+            <input
+                type="email"
+                id="username"
+                placeholder="أدخلي البريد الإلكتروني"
+                autocomplete="email"
                 required
             >
 
