@@ -39,8 +39,12 @@
 
         .filters {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
+        }
+
+        @media (max-width: 950px) {
+            .filters { grid-template-columns: repeat(2, 1fr); }
         }
 
         label {
@@ -211,17 +215,22 @@
             </div>
 
             <div>
-                <label for="reportDate">📆 تاريخ محدد</label>
-                <input type="date" id="reportDate">
+                <label for="reportDateFrom">📆 من تاريخ</label>
+                <input type="date" id="reportDateFrom">
+            </div>
+
+            <div>
+                <label for="reportDateTo">📆 إلى تاريخ</label>
+                <input type="date" id="reportDateTo">
             </div>
 
             <div>
                 <label for="reportClass">🏫 الصف</label>
                 <select id="reportClass">
                     <option value="">كل الصفوف</option>
-                    <option>سابع أ</option>
-                <option>سابع ب</option>
-                <option>سابع ج</option>
+                    <option value="سابع أ">سابع أ</option>
+                <option value="سابع ب">سابع ب</option>
+                <option value="سابع ج">سابع ج</option>
 
                 <option value="ثامن أ">ثامن أ</option>
                 <option value="ثامن ب">ثامن ب</option>
@@ -329,7 +338,14 @@
     let loadStarted = false;
 
     const monthInput = document.getElementById("reportMonth");
-    const dateInput = document.getElementById("reportDate");
+    const dateFromInput = document.getElementById("reportDateFrom");
+    const dateToInput = document.getElementById("reportDateTo");
+
+    // تحويل تاريخ مثل 2026-11-18 إلى رقم 20261118 للمقارنة
+    function dateKey(value) {
+        const [year, month, day] = value.split("-").map(Number);
+        return year * 10000 + month * 100 + day;
+    }
     const classSelect = document.getElementById("reportClass");
     const table = document.getElementById("reportTable");
     const noReport = document.getElementById("noReport");
@@ -448,18 +464,22 @@
                 }
             }
 
-            if (dateInput.value) {
+            // فلترة حسب فترة (من تاريخ - إلى تاريخ)
+            if (dateFromInput.value || dateToInput.value) {
                 if (!recordDate) return false;
 
-                const [year, month, day] = dateInput.value
-                    .split("-")
-                    .map(Number);
+                const recordKey =
+                    recordDate.year * 10000 +
+                    recordDate.month * 100 +
+                    recordDate.day;
 
-                if (
-                    recordDate.year !== year ||
-                    recordDate.month !== month ||
-                    recordDate.day !== day
-                ) {
+                if (dateFromInput.value &&
+                    recordKey < dateKey(dateFromInput.value)) {
+                    return false;
+                }
+
+                if (dateToInput.value &&
+                    recordKey > dateKey(dateToInput.value)) {
                     return false;
                 }
             }
@@ -572,7 +592,8 @@
     }
 
     monthInput.addEventListener("change", updateReport);
-    dateInput.addEventListener("change", updateReport);
+    dateFromInput.addEventListener("change", updateReport);
+    dateToInput.addEventListener("change", updateReport);
     classSelect.addEventListener("change", updateReport);
 
     document.getElementById("printButton").addEventListener("click", () => {
