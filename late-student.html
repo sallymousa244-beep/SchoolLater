@@ -54,6 +54,18 @@
 
         <form id="lateForm">
 
+            <!-- اسم المعلمة -->
+            <label for="teacherName">
+                اسم المعلمة
+            </label>
+
+            <input
+                type="text"
+                id="teacherName"
+                readonly
+            >
+
+
             <!-- الصف -->
             <label for="className">
                 الصف
@@ -62,12 +74,12 @@
             <select id="className" required>
 
                 <option value="">
-                كل الصفوف
-            </option>
+                    اختاري الصف
+                </option>
 
-            <option>سابع أ</option>
-                <option>سابع ب</option>
-                <option>سابع ج</option>
+                <option value="سابع أ">سابع أ</option>
+                <option value="سابع ب">سابع ب</option>
+                <option value="سابع ج">سابع ج</option>
 
                 <option value="ثامن أ">ثامن أ</option>
                 <option value="ثامن ب">ثامن ب</option>
@@ -96,7 +108,6 @@
                 <option value="توجيهي إدارة اعمال">
                     ثاني عشر ادارة أعمال
                 </option>
-
 
             </select>
 
@@ -228,6 +239,22 @@
 
     const saveButton =
         document.getElementById("saveButton");
+
+    const teacherInput =
+        document.getElementById("teacherName");
+
+
+    // اسم المعلمة من صفحة الدخول
+    const savedTeacher =
+        localStorage.getItem("username");
+
+    // إذا ما في اسم، ترجع لصفحة الدخول
+    if (!savedTeacher) {
+        window.location.href = "index.html";
+    }
+
+    teacherInput.value =
+        savedTeacher || "";
 
 
     console.log("الكود اشتغل ✅");
@@ -513,6 +540,24 @@
                     .value;
 
 
+            const teacherName =
+                teacherInput.value.trim();
+
+
+            // التأكد من اسم المعلمة
+            if (!teacherName) {
+
+                alert(
+                    "⚠️ سجلي الدخول من جديد وأدخلي اسمك"
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return;
+            }
+
+
             // التأكد من الصف
             if (!className) {
 
@@ -575,9 +620,7 @@
                             ),
 
                         teacher:
-                            localStorage.getItem(
-                                "username"
-                            ) || "المعلمة",
+                            teacherName,
 
                         createdAt:
                             serverTimestamp()
@@ -596,6 +639,9 @@
 
                 // إعادة النموذج
                 lateForm.reset();
+
+                // إبقاء اسم المعلمة بعد إعادة النموذج
+                teacherInput.value = teacherName;
 
 
                 // إعادة قائمة الطالبات
