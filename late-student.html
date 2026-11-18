@@ -248,13 +248,18 @@
     const savedTeacher =
         localStorage.getItem("username");
 
-    // إذا ما في اسم، ترجع لصفحة الدخول
-    if (!savedTeacher) {
-        window.location.href = "index.html";
-    }
+    // إذا ما في اسم محفوظ، المعلمة تكتبه هون مرة وحدة
+    if (savedTeacher) {
 
-    teacherInput.value =
-        savedTeacher || "";
+        teacherInput.value = savedTeacher;
+
+    } else {
+
+        teacherInput.readOnly = false;
+        teacherInput.required = true;
+        teacherInput.placeholder = "أدخلي اسمك";
+
+    }
 
 
     console.log("الكود اشتغل ✅");
@@ -548,14 +553,22 @@
             if (!teacherName) {
 
                 alert(
-                    "⚠️ سجلي الدخول من جديد وأدخلي اسمك"
+                    "⚠️ أدخلي اسم المعلمة"
                 );
 
-                window.location.href =
-                    "index.html";
+                teacherInput.focus();
 
                 return;
             }
+
+
+            // حفظ الاسم لحد ما تسجل خروج
+            localStorage.setItem(
+                "username",
+                teacherName
+            );
+
+            teacherInput.readOnly = true;
 
 
             // التأكد من الصف
