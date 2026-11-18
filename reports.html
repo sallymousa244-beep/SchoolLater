@@ -101,10 +101,20 @@
 
         .buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr auto;
+            align-items: center;
             gap: 10px;
             margin-top: 20px;
         }
+
+        #homeButton {
+            width: auto;
+            padding: 9px 16px;
+            font-size: 14px;
+            background: #888;
+        }
+
+        #homeButton:hover { background: #6f6f6f; }
 
         button {
             width: 100%;
@@ -149,6 +159,8 @@
             }
 
             .card { padding: 18px; }
+
+            #homeButton { justify-self: center; }
         }
 
         @media print {
@@ -167,54 +179,6 @@
                 color: black !important;
             }
         }
-        
-.print-header {
-    display: none;
-}
-
-@media print {
-    @page {
-        size: A4 portrait;
-        margin: 15mm;
-    }
-
-    .print-header {
-        display: block !important;
-        text-align: center;
-        color: #000;
-        margin-bottom: 25px;
-        line-height: 1.8;
-        font-size: 14px;
-    }
-
-    .print-header .header-ministry {
-        font-weight: bold;
-        font-size: 17px;
-    }
-
-    .print-header h2 {
-        color: #000 !important;
-        margin: 12px 0;
-        font-size: 20px;
-    }
-
-    .print-header hr {
-        border: 0;
-        border-top: 1px solid #000;
-        margin: 10px 0;
-    }
-
-    .print-period {
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    .print-date {
-        font-size: 12px;
-        margin-top: 5px;
-    }
-}
-
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -222,30 +186,6 @@
 
 <body>
 <div class="container">
-    
-    <div class="print-header">
-        <div class="header-ministry">المملكة الأردنية الهاشمية</div>
-        <div>وزارة التربية والتعليم</div>
-        <div>مدرسة كفرسوم الثانوية الشاملة للبنات</div>
-
-        <hr>
-
-        <h2>تقرير التأخير الصباحي للطالبات</h2>
-
-        <div class="print-period">
-            الفترة من:
-            <span id="printStartDate">غير محدد</span>
-            &nbsp;&nbsp;
-            إلى:
-            <span id="printEndDate">غير محدد</span>
-        </div>
-
-        <div class="print-date">
-            تاريخ الطباعة:
-            <span id="printToday"></span>
-        </div>
-    </div>
-
 
     <div class="card">
         <h1>📊 تقارير التأخير</h1>
@@ -270,56 +210,54 @@
                 </select>
             </div>
 
-            
-<div>
-    <label for="startDate">📅 من تاريخ</label>
-    <input type="date" id="startDate">
-</div>
-
-<div>
-    <label for="endDate">📅 إلى تاريخ</label>
-    <input type="date" id="endDate">
-</div>
-
+            <div>
+                <label for="reportDate">📆 تاريخ محدد</label>
+                <input type="date" id="reportDate">
+            </div>
 
             <div>
                 <label for="reportClass">🏫 الصف</label>
                 <select id="reportClass">
-                   <option value="">
-                كل الصفوف
-            </option>
-
-                <option>سابع أ</option>
+                    <option value="">كل الصفوف</option>
+                    <option>سابع أ</option>
                 <option>سابع ب</option>
                 <option>سابع ج</option>
 
-                <option>ثامن أ</option>
-                <option>ثامن ب</option>
-                <option>ثامن ج</option>
+                <option value="ثامن أ">ثامن أ</option>
+                <option value="ثامن ب">ثامن ب</option>
+                <option value="ثامن ج">ثامن ج</option>
 
-                <option>تاسع أ</option>
-                <option>تاسع ب</option>
-                <option>تاسع ج</option>
+                <option value="تاسع أ">تاسع أ</option>
+                <option value="تاسع ب">تاسع ب</option>
+                <option value="تاسع ج">تاسع ج</option>
 
-                <option>عاشر أ</option>
-                <option>عاشر ب</option>
+                <option value="عاشر أ">عاشر أ</option>
+                <option value="عاشر ب">عاشر ب</option>
 
-                <option> حادي عشر أ</option>
-                <option> حادي عشر ب</option>
+                <option value="اول ثانوي أ"> حادي عشر أ</option>
+                <option value="اول ثانوي ب"> حادي عشر ب</option>
 
-                <option>ثاني عشر صحي أ</option>
-                <option>ثاني عشر صحي ب</option>
-                <option>ثاني عشر لغات</option>
+                <option value="توجيهي صحي أ">ثاني عشر صحي أ</option>
+                <option value="توجيهي صحي ب">ثاني عشر صحي ب</option>
+                <option value="توجيهي لغات">ثاني عشر لغات</option>
                 
-                <option>عاشر تكنولوجيا</option>
-                <option>حادي عشر تكنولوجيا</option>
-                <option>ثاني عشر تكنولوجيا</option>
+                <option value="عاشر تكنولوجيا">عاشر تكنولوجيا</option>
+                <option value="اول ثانوي تكنولوجيا">حادي عشر تكنولوجيا</option>
+                <option value="توجيهي تكنولوجيا">ثاني عشر تكنولوجيا</option>
 
-                <option>عاشر أعمال</option>
-                <option>حادي عشر أعمال</option>
-                <option> ثاني عشر ادارة أعمال </option>
+                <option value="عاشر أعمال">عاشر أعمال</option>
+                <option value="اول ثانوي أعمال">حادي عشر أعمال</option>
+                <option value="توجيهي إدارة اعمال">
+                    ثاني عشر ادارة أعمال
+                </option>
                 </select>
             </div>
+        </div>
+
+        <div class="buttons">
+            <button id="printButton" type="button">🖨️ طباعة التقرير</button>
+            <button id="excelButton" type="button">📥 تنزيل Excel</button>
+            <button id="homeButton" type="button">← الرئيسية</button>
         </div>
     </div>
 
@@ -367,12 +305,6 @@
         <p id="noReport" class="no-report" hidden>
             لا توجد بيانات حسب الفلاتر المختارة.
         </p>
-
-        <div class="buttons">
-            <button id="printButton" type="button">🖨️ طباعة التقرير</button>
-            <button id="excelButton" type="button">📥 تنزيل Excel</button>
-            <button id="homeButton" type="button">← الرجوع للصفحة الرئيسية</button>
-        </div>
     </div>
 </div>
 
@@ -397,8 +329,7 @@
     let loadStarted = false;
 
     const monthInput = document.getElementById("reportMonth");
-    const startDateInput = document.getElementById("startDate");
-const endDateInput = document.getElementById("endDate");
+    const dateInput = document.getElementById("reportDate");
     const classSelect = document.getElementById("reportClass");
     const table = document.getElementById("reportTable");
     const noReport = document.getElementById("noReport");
@@ -506,73 +437,43 @@ const endDateInput = document.getElementById("endDate");
         return `${String(d.day).padStart(2, "0")}/${String(d.month).padStart(2, "0")}/${d.year}`;
     }
 
-    
-function getFilteredRecords() {
-    return records.filter(record => {
-        const recordDate = getRecordDate(record);
+    function getFilteredRecords() {
+        return records.filter(record => {
+            const recordDate = getRecordDate(record);
 
-        // فلترة حسب الشهر
-        if (monthInput.value) {
+            if (monthInput.value) {
+                if (!recordDate ||
+                    recordDate.month !== Number(monthInput.value)) {
+                    return false;
+                }
+            }
+
+            if (dateInput.value) {
+                if (!recordDate) return false;
+
+                const [year, month, day] = dateInput.value
+                    .split("-")
+                    .map(Number);
+
+                if (
+                    recordDate.year !== year ||
+                    recordDate.month !== month ||
+                    recordDate.day !== day
+                ) {
+                    return false;
+                }
+            }
+
             if (
-                !recordDate ||
-                recordDate.month !== Number(monthInput.value)
+                classSelect.value &&
+                String(record.className ?? "").trim() !== classSelect.value
             ) {
                 return false;
             }
-        }
 
-        // فلترة من تاريخ
-        if (startDateInput.value) {
-            if (!recordDate) return false;
-
-            const [year, month, day] =
-                startDateInput.value.split("-").map(Number);
-
-            const recordTime = new Date(
-                recordDate.year,
-                recordDate.month - 1,
-                recordDate.day
-            ).getTime();
-
-            const startTime = new Date(
-                year, month - 1, day
-            ).getTime();
-
-            if (recordTime < startTime) return false;
-        }
-
-        // فلترة إلى تاريخ
-        if (endDateInput.value) {
-            if (!recordDate) return false;
-
-            const [year, month, day] =
-                endDateInput.value.split("-").map(Number);
-
-            const recordTime = new Date(
-                recordDate.year,
-                recordDate.month - 1,
-                recordDate.day
-            ).getTime();
-
-            const endTime = new Date(
-                year, month - 1, day
-            ).getTime();
-
-            if (recordTime > endTime) return false;
-        }
-
-        // فلترة حسب الصف
-        if (
-            classSelect.value &&
-            String(record.className ?? "").trim() !==
-                classSelect.value
-        ) {
-            return false;
-        }
-
-        return true;
-    });
-}
+            return true;
+        });
+    }
 
     function addCell(row, value) {
         const cell = document.createElement("td");
@@ -671,26 +572,12 @@ function getFilteredRecords() {
     }
 
     monthInput.addEventListener("change", updateReport);
-startDateInput.addEventListener("change", updateReport);
-endDateInput.addEventListener("change", updateReport);
-classSelect.addEventListener("change", updateReport);
+    dateInput.addEventListener("change", updateReport);
+    classSelect.addEventListener("change", updateReport);
 
-    
-
-document.getElementById("printButton").addEventListener("click", () => {
-    document.getElementById("printStartDate").textContent =
-        startDateInput.value || "من بداية السجلات";
-
-    document.getElementById("printEndDate").textContent =
-        endDateInput.value || "حتى آخر السجلات";
-
-    document.getElementById("printToday").textContent =
-        new Date().toLocaleDateString("ar-JO");
-
-    window.print();
-});
-
-
+    document.getElementById("printButton").addEventListener("click", () => {
+        window.print();
+    });
 
     document.getElementById("homeButton").addEventListener("click", () => {
         window.location.href = "dashboard.html";
