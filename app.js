@@ -23,6 +23,25 @@ if (loginForm) {
             event.preventDefault();
 
 
+            const teacherName =
+                document
+                    .getElementById("teacherName")
+                    .value
+                    .trim();
+
+
+            if (!teacherName) {
+
+                message.textContent =
+                    "⚠️ أدخلي اسم المعلمة";
+
+                message.style.color =
+                    "red";
+
+                return;
+            }
+
+
             const email =
                 document
                     .getElementById("username")
@@ -42,6 +61,13 @@ if (loginForm) {
                     auth,
                     email,
                     password
+                );
+
+
+                // حفظ اسم المعلمة لحد ما تسجل خروج
+                localStorage.setItem(
+                    "username",
+                    teacherName
                 );
 
 
