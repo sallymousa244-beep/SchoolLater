@@ -216,37 +216,29 @@
                 <label for="reportClass">🏫 الصف</label>
                 <select id="reportClass">
                     <option value="">كل الصفوف</option>
-                    <option value="سابع أ">سابع أ</option>
-                <option value="سابع ب">سابع ب</option>
-                <option value="سابع ج">سابع ج</option>
-
-                <option value="ثامن أ">ثامن أ</option>
-                <option value="ثامن ب">ثامن ب</option>
-                <option value="ثامن ج">ثامن ج</option>
-
-                <option value="تاسع أ">تاسع أ</option>
-                <option value="تاسع ب">تاسع ب</option>
-                <option value="تاسع ج">تاسع ج</option>
-
-                <option value="عاشر أ">عاشر أ</option>
-                <option value="عاشر ب">عاشر ب</option>
-
-                <option value="اول ثانوي أ"> حادي عشر أ</option>
-                <option value="اول ثانوي ب"> حادي عشر ب</option>
-
-                <option value="توجيهي صحي أ">ثاني عشر صحي أ</option>
-                <option value="توجيهي صحي ب">ثاني عشر صحي ب</option>
-                <option value="توجيهي لغات">ثاني عشر لغات</option>
-                
-                <option value="عاشر تكنولوجيا">عاشر تكنولوجيا</option>
-                <option value="اول ثانوي تكنولوجيا">حادي عشر تكنولوجيا</option>
-                <option value="توجيهي تكنولوجيا">ثاني عشر تكنولوجيا</option>
-
-                <option value="عاشر أعمال">عاشر أعمال</option>
-                <option value="اول ثانوي أعمال">حادي عشر أعمال</option>
-                <option value="توجيهي إدارة اعمال">
-                    ثاني عشر ادارة أعمال
-                </option>
+                    <option>سابع أ</option>
+                    <option>سابع ب</option>
+                    <option>سابع ج</option>
+                    <option>ثامن أ</option>
+                    <option>ثامن ب</option>
+                    <option>ثامن ج</option>
+                    <option>تاسع أ</option>
+                    <option>تاسع ب</option>
+                    <option>تاسع ج</option>
+                    <option>عاشر أ</option>
+                    <option>عاشر ب</option>
+                    <option>أول ثانوي أ</option>
+                    <option>أول ثانوي ب</option>
+                    <option>توجيهي صحي</option>
+                    <option>توجيهي هندسي</option>
+                    <option>توجيهي لغات</option>
+                    <option>توجيهي أعمال</option>
+                    <option>عاشر IT</option>
+                    <option>أول ثانوي IT</option>
+                    <option>توجيهي IT</option>
+                    <option>عاشر أعمال</option>
+                    <option>أول ثانوي أعمال</option>
+                    <option>توجيهي BTEC أعمال</option>
                 </select>
             </div>
         </div>
@@ -386,7 +378,7 @@
             // إزالة علامات الاتجاه التي قد ترافق التاريخ العربي
             value = value.replace(/[\u200e\u200f\u202a-\u202e]/g, "");
 
-            // دعم 11/10/2026 أو ١١‏/١٠‏/٢٠٢٦
+            // دعم 11/10/2026 أو التاريخ بالأرقام العربية
             const parts = value.match(
                 /^(\d{1,2})\s*[\/.-]\s*(\d{1,2})\s*[\/.-]\s*(\d{4})$/
             );
