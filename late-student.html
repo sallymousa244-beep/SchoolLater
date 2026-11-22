@@ -32,6 +32,27 @@
             cursor: not-allowed;
         }
 
+        #lateWarning {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        #lateWarning.info {
+            background: #eef0fd;
+            color: #4f46a5;
+        }
+
+        #lateWarning.danger {
+            background: #fdecec;
+            color: #c62828;
+            border: 1px solid #f5b5b5;
+        }
+
         #successMessage {
             margin-top: 15px;
             font-weight: bold;
@@ -190,6 +211,8 @@
 
         <p id="successMessage"></p>
 
+        <p id="lateWarning"></p>
+
 
         <button
             class="back-button"
@@ -216,6 +239,110 @@
         where,
         getDocs
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+    // ========================================
+    // حد التنبيه: إذا زاد عدد تأخيرات الطالبة
+    // خلال الشهر عن هذا الرقم يظهر تنبيه
+    // ========================================
+
+    const LATE_LIMIT = 3;
+
+
+    // تحويل الأرقام العربية إلى إنجليزية
+    function normalizeDigits(value) {
+        return String(value ?? "")
+            .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+            .replace(/[‎‏‪-‮]/g, "");
+    }
+
+
+    // معرفة شهر وسنة السجل
+    function getMonthYear(record) {
+
+        if (record.createdAt &&
+            typeof record.createdAt.toDate === "function") {
+            const d = record.createdAt.toDate();
+            return { month: d.getMonth() + 1, year: d.getFullYear() };
+        }
+
+        const parts = normalizeDigits(record.date)
+            .match(/(\d{1,2})\s*[\/.-]\s*(\d{1,2})\s*[\/.-]\s*(\d{4})/);
+
+        if (parts) {
+            return { month: Number(parts[2]), year: Number(parts[3]) };
+        }
+
+        return null;
+    }
+
+
+    // عرض عدد تأخيرات الطالبة هذا الشهر وتنبيه إذا تجاوزت الحد
+    async function showMonthlyCount(studentName, className) {
+
+        const warning =
+            document.getElementById("lateWarning");
+
+        warning.style.display = "none";
+
+        try {
+
+            const snapshot = await getDocs(
+                query(
+                    collection(db, "lateRecords"),
+                    where("studentName", "==", studentName)
+                )
+            );
+
+            const now = new Date();
+
+            let count = 0;
+
+            snapshot.forEach(function (doc) {
+
+                const record = doc.data();
+
+                if (record.className !== className) return;
+
+                const my = getMonthYear(record);
+
+                if (my &&
+                    my.month === now.getMonth() + 1 &&
+                    my.year === now.getFullYear()) {
+                    count++;
+                }
+            });
+
+
+            warning.className = "";
+
+            if (count > LATE_LIMIT) {
+
+                warning.className = "danger";
+
+                warning.textContent =
+                    "⚠️ تنبيه: الطالبة " + studentName +
+                    " تأخرت " + count +
+                    " مرات هذا الشهر (أكثر من " + LATE_LIMIT + " مرات). يُرجى متابعتها مع الإدارة أو المرشدة.";
+
+                alert(warning.textContent);
+
+            } else {
+
+                warning.className = "info";
+
+                warning.textContent =
+                    "عدد تأخيرات الطالبة " + studentName +
+                    " هذا الشهر: " + count;
+            }
+
+            warning.style.display = "block";
+
+        } catch (error) {
+
+            console.error("خطأ في حساب عدد التأخيرات:", error);
+        }
+    }
 
 
     // ========================================
@@ -648,6 +775,13 @@
 
                 successMessage.style.color =
                     "green";
+
+
+                // عدد تأخيرات الطالبة هذا الشهر + التنبيه
+                showMonthlyCount(
+                    studentName,
+                    className
+                );
 
 
                 // إعادة النموذج
